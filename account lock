@@ -1,0 +1,32 @@
+var accs = ["CRYSTALPVPNN"]
+const mineflayer = require("mineflayer")
+const Vec3 = require("vec3").Vec3
+function rnumber(min,max) {
+  return Math.random() * (max - min) + min;
+}
+function bot(name,version,ip) {
+  var client = mineflayer.createBot({ host: ip, username: name, version: version, viewDistance: "tiny" });
+  client.on("kicked", function() {
+    console.log(`kicked ${name}`);
+    bot(name,version,ip)
+  })
+  client.on("message", function(m) {
+    console.log(`${m}`);
+  })
+  client.once('login', function () {
+    setInterval(function() {
+      client.setControlState("sneak",true)
+      client.lookAt(new Vec3(rnumber(-360,360), rnumber(-360,360), rnumber(-360,360)),true)
+      client._client.write('arm_animation', {hand:0});
+      setTimeout(function() {
+        client._client.write('arm_animation', {hand:1});
+        client.setControlState("sneak",false)
+      },50)
+    },150)
+  })
+}
+accs.forEach(function(name,i) {
+  setTimeout(function() {
+    bot(name,"1.12.2","krcrystal.sparked.network")
+  },i*5000)
+})
